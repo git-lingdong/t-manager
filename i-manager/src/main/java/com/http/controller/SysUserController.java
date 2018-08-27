@@ -3,12 +3,11 @@ package com.http.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.http.common.util.DateUtil;
@@ -23,30 +22,12 @@ import com.http.service.SysUserService;
  * @author GR·cheng
  * @since 2017-11-17
  */
-@Controller
-@RequestMapping("/")
+@RestController
+@RequestMapping("/user")
 public class SysUserController {
 
 	@Autowired
 	private SysUserService userService;
-
-	/**
-	 * 
-	 * 
-	 * @Title: index
-	 * @Description: 项目根目录访问index.jsp
-	 * @param: @param
-	 *             modelAndView
-	 * @param: @return
-	 * @return: ModelAndView
-	 * @user: GR·cheng
-	 *
-	 */
-	@RequestMapping("/")
-	public ModelAndView index(ModelAndView modelAndView) {
-		modelAndView.setViewName("index");
-		return modelAndView;
-	}
 
 	/**
 	 * 

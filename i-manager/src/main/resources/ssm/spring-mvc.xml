@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 								http://www.springframework.org/schema/beans/spring-beans.xsd
+	  								http://www.springframework.org/schema/context
+	  								http://www.springframework.org/schema/context/spring-context.xsd
+	   								http://www.springframework.org/schema/mvc
+	    							http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	    							http://www.springframework.org/schema/task
+									http://www.springframework.org/schema/task/spring-task.xsd">
 
 	<mvc:default-servlet-handler />
 
-	<!-- Controller包(自动注入) -->
-	<context:component-scan base-package="com.http.controller" />
+	<!-- 扫描注解目录 -->
+	<context:component-scan base-package="com.http" />
 
 	<!-- FastJson注入 -->
 	<mvc:annotation-driven>
@@ -45,16 +52,39 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
+	<!-- 系统初始化任务 -->
+	<bean class="com.http.common.init.SysInitTask"></bean>
+
+	<!-- 系统定时任务 -->
+	<task:annotation-driven />
+
 	<!-- 拦截器 -->
-	<!-- <mvc:interceptors> <mvc:interceptor> <mvc:mapping path="/**" /> <bean 
-		class="com.http.common.filter.CROSInterceptor"></bean> </mvc:interceptor> 
-		<mvc:interceptor> <mvc:mapping path="/**" /> <mvc:exclude-mapping path="/resources/**" 
-		/> <mvc:exclude-mapping path="/login/**" /> <mvc:exclude-mapping path="/page/**" 
-		/> <bean class="com.lhxy.core.interceptor.LoginInterceptor" /> </mvc:interceptor> 
-		<mvc:interceptor> <mvc:mapping path="/**" /> <mvc:exclude-mapping path="/resources/**" 
-		/> <mvc:exclude-mapping path="/login/**" /> <mvc:exclude-mapping path="/page/**" 
-		/> <bean class="com.lhxy.core.interceptor.PermissionInterceptor" /> </mvc:interceptor> 
-		</mvc:interceptors> -->
+	<mvc:interceptors>
+
+		<!-- token登录拦截器 -->
+		<mvc:interceptor>
+			<!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
+			<mvc:mapping path="/**" />
+			<!-- 不需要拦截的路径 -->
+			<!-- 第一种配置方式 -->
+			<mvc:exclude-mapping path="/user/get/verificationCode/**" />
+			<mvc:exclude-mapping path="/user/post/login/**" />
+			<mvc:exclude-mapping path="/user/get/loginout/**" />
+			<mvc:exclude-mapping path="/fileu/post/uploadImage" />
+			<mvc:exclude-mapping path="/user/get/getLoginUser" />
+			<!-- 第二种配置方式，自定义处理 -->
+			<!-- <bean class="org.sxkj.ytl.filter.TokenInterceptor"> <property name="exceptUrls"> 
+				<list> <value>/get/verificationCode</value> <value>/post/login</value> </list> 
+				</property> </bean> -->
+			<!-- 拦截器位置 -->
+			<bean class="com.http.common.filter.TokenInterceptor" />
+		</mvc:interceptor>
+
+		<!-- 权限拦截器 -->
+		<!-- <mvc:interceptor> <mvc:mapping path="/**" /> <bean class="com.http.common.filter.AuthInterceptor" 
+			/> </mvc:interceptor> -->
+
+	</mvc:interceptors>
 
 	<!-- 静态资源配置 -->
 	<mvc:resources mapping="/resources/**" location="/resources/" />
@@ -69,8 +99,12 @@
 	<!-- 上传限制 -->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<!-- 上传文件大小限制为31M，31*1024*1024 -->
-		<property name="maxUploadSize" value="32505856" />
+		<!-- 默认编码 -->
+		<property name="defaultEncoding" value="utf-8" />
+		<!--内存中的最大值 -->
+		<!-- <property name="maxInMemorySize" value="40960" /> -->
+		<!-- 上传图片最大大小200*1024*1024M -->
+		<property name="maxUploadSize" value="209715200"></property>
 	</bean>
 
 </beans>
